@@ -1,0 +1,35 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+__pycache__/
+*.pyc
+*.pyo
+dist/
+build/
+*.egg-info
+.pytest_cache/
+.coverage
+htmlcov/
+venv/
+.venv/
+env/
+*.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+instance/
+include/
+# Arquivos de configuração locais (comente se você versionar esses arquivos!)
+config.ini
+secrets.json
+local_settings.py
+
+# Ambientes virtuais
+venv/
+.venv/
+env/
+myenv/
+ENV/
+venv/*
+env/*
+pyvenv.cfg
