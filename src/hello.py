@@ -4,26 +4,39 @@ import sqlalchemy as sa
 from datetime import datetime
 from flask import Flask, current_app
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager
+
 
 class Base(DeclarativeBase):
   pass
 
 db = SQLAlchemy(model_class=Base)
 migrate = Migrate()
+jwt = JWTManager()
+
+class Role(db.Model):
+    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(sa.String, unique=True, nullable=False)
+    user: Mapped[list["User"]] = relationship(back_populates="role")
+
+    def __repr__(self) -> str:
+        return f"Role(id={self.id!r}, name={self.name!r})"
 
 class User(db.Model):
-    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
     username: Mapped[str] = mapped_column(sa.String, unique=True, nullable=False)
     active: Mapped[bool] = mapped_column(sa.Boolean, default=True)
     password: Mapped[str] = mapped_column(sa.String, nullable=False)
+    role_id: Mapped[int] = mapped_column(sa.ForeignKey("role.id", name="role_id"), nullable=True)
+    role: Mapped["Role"] = relationship(back_populates="user") 
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, username={self.username!r}, active={self.active!r})"
 
 class Post(db.Model):
-    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
     author_id: Mapped[int] = mapped_column(sa.ForeignKey("user.id"), nullable=False)
     created: Mapped[datetime] = mapped_column(sa.DateTime, server_default=sa.func.now())
     title: Mapped[str] = mapped_column(sa.String, nullable=False)
@@ -44,6 +57,7 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY='dev',
         SQLALCHEMY_DATABASE_URI='sqlite:///blog.sqlite',
+        JWT_SECRET_KEY='dev',
     )
 
     if test_config is None:
@@ -63,11 +77,13 @@ def create_app(test_config=None):
     
     db.init_app(app)
     migrate.init_app(app, db)
+    jwt.init_app(app)
 
     # register blueprints
-    from src.controller import user, post
+    from src.controller import user, post, auth
     app.register_blueprint(user.app)
     app.register_blueprint(post.app)
+    app.register_blueprint(auth.app)
         
     return app
     # a simple page that says hello
