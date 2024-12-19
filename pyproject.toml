@@ -6,7 +6,7 @@ authors = ["Walex <w.alex36@outlook.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.11"
 sqlalchemy = "^2.0.36"
 flask-sqlalchemy = "^3.1.1"
 flask-migrate = "^4.0.7"
