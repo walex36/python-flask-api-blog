@@ -3,12 +3,16 @@ from src.models import db, User
 from src.utils import required_role
 from http import HTTPStatus, HTTPMethod
 from flask_jwt_extended import jwt_required
+from src.app import bcrypt
 
 app = Blueprint('user', __name__, url_prefix='/users')
 
 def _create_user():
     data = request.json
-    user = User(username=data["username"], password=data["password"], role_id=data["role_id"])
+    user = User(
+            username=data["username"], 
+            password=bcrypt.generate_password_hash(data["password"]), 
+            role_id=data["role_id"])
     db.session.add(user)
     db.session.commit()
 
