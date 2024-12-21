@@ -5,10 +5,14 @@ from flask_jwt_extended import JWTManager
 from src.models import db
 from flask_bcrypt import Bcrypt
 from werkzeug.exceptions import HTTPException
+from flask_marshmallow import Marshmallow
+
 
 migrate = Migrate()
 jwt = JWTManager()
 bcrypt = Bcrypt()
+ma = Marshmallow()
+
 
 def create_app(environment=os.environ["ENVIRONMENT"]):
     app = Flask(__name__, instance_relative_config=True)
@@ -26,9 +30,10 @@ def create_app(environment=os.environ["ENVIRONMENT"]):
     migrate.init_app(app, db)
     jwt.init_app(app)
     bcrypt.init_app(app)
+    ma.init_app(app)
 
     # register blueprints
-    from src.controller import user, post, auth
+    from src.controllers import user, post, auth
     app.register_blueprint(user.app)
     app.register_blueprint(post.app)
     app.register_blueprint(auth.app)

@@ -2,7 +2,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 import sqlalchemy as sa
 from .base_model import db
 
-
 class User(db.Model):
     id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
     username: Mapped[str] = mapped_column(sa.String, unique=True, nullable=False)
@@ -13,3 +12,4 @@ class User(db.Model):
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, username={self.username!r}, active={self.active!r})"
+    
