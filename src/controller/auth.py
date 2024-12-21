@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from src.hello import User, db
+from src.models import User, db
 from http import HTTPStatus, HTTPMethod
 from flask_jwt_extended import create_access_token
 from sqlalchemy import select

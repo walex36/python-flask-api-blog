@@ -1,8 +1,8 @@
 from flask import Blueprint, request
-from src.hello import User, db
+from src.models import db, User
 from src.utils import required_role
 from http import HTTPStatus, HTTPMethod
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 
 app = Blueprint('user', __name__, url_prefix='/users')
 

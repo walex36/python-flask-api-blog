@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from src.hello import User, Role, db
+from app import User, Role, db
 from sqlalchemy import select
 
 
