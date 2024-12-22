@@ -6,19 +6,27 @@ from src.models import db
 from flask_bcrypt import Bcrypt
 from werkzeug.exceptions import HTTPException
 from flask_marshmallow import Marshmallow
+from apispec import APISpec
+from apispec.ext.marshmallow import MarshmallowPlugin
+from apispec_webframeworks.flask import FlaskPlugin
 
 
 migrate = Migrate()
 jwt = JWTManager()
 bcrypt = Bcrypt()
 ma = Marshmallow()
+spec = APISpec(
+    title="Blog API",
+    version="1.0.0",
+    openapi_version="3.0.2",
+    info=dict(description="Blog API Documentation"),
+    plugins=[FlaskPlugin(), MarshmallowPlugin()],
+)
 
 
 def create_app(environment=os.environ["ENVIRONMENT"]):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(f'src.config.{environment.title()}Config')
-
-    
 
     # ensure the instance folder exists
     try:
@@ -37,6 +45,10 @@ def create_app(environment=os.environ["ENVIRONMENT"]):
     app.register_blueprint(user.app)
     app.register_blueprint(post.app)
     app.register_blueprint(auth.app)
+    
+    @app.route("/docs")
+    def docs():
+        return spec.path(view=user.handler_user_id).path(view=user.handler_user).to_dict()
     
     @app.errorhandler(HTTPException)
     def handle_exception(e):
